@@ -38,7 +38,7 @@ void by2bi_convert_single(char byte, uint8_t binary[]);
 void by2bi_convert(char byte[], uint8_t binary[], size_t bytes);
 int check_rows(int cols);
 int read_buttons();
-char keypad_char_decode(int button_pattern);
+char keypad_uint8_t_decode(int button_pattern);
 void myDAC_init();
 int myADC_init(int pinOut);  
 
