@@ -1,4 +1,5 @@
 #include "helpers.h"
+#include "uart1.h"
 #define RED  0;
 #define GREEN 1;
 #define BLUE 2;
@@ -29,6 +30,12 @@ void setup()
 	/*  Basic setup of monitor, Keyboard, LCD Monitor, Lighting Module */
 	lcd_init();
 	lcd_write_str("Hello User", 0,0, sizeof("hello user")
+	int key=key_pressed();
+	while(key==-1 || key >= 7)
+	{
+		key=key_pressed;
+	}
+	show_col(key, 1);
 }
 
 void show_col(uint8_t col, uint8_t time)
@@ -40,37 +47,51 @@ void show_col(uint8_t col, uint8_t time)
 			dmx_write(255,0,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 1:
 			dmx_write(0,255,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 2:
 			dmx_write(0,0,255);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 3:
 			dmx_write(255,255,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 4:
 			dmx_write(255,0,255);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 5:
 			dmx_write(0,255,255);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 6:
 			dmx_write(255,255,255);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+break;
 	}
 }
 
-uint8_t key_pressed()
+int key_pressed()
 {
-	uint8_t key=-1;
-	while(keypad_uint8_t_decode(last_state)==keypad_uint8_t_decode(state) && keypad_uint8_t_decode(state)=='G')
+	int key=-1;
+	while(keypad_uint8_t_decode(last_state)==keypad_char_decode(state) && keypad_uint8_t_decode(state)=='G')
 	{
 		state=last_state;
 		state=read_buttons();
@@ -78,8 +99,8 @@ uint8_t key_pressed()
 	char r = keypad_uint8_t_decode(state);
 	if(!isdigit(r))
 	{
-		lcd_write_str("Please enter a valid digit",0,0,sizeof("please enter a valid digit"));
-		//restarts	setup();
+		lcd_write_str("Enter a valid digit",0,0,sizeof("enter a valid digit"));
+		return key;
 	}
  	key = r - '0';
 	return key;
