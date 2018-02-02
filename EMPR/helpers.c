@@ -97,7 +97,7 @@ void SysTick_Handler(void)
 	}
 	if(break_flag == 2)
 	{
-		LPU_UART1 -> LCR &= ~(UART_LCR_BREAK_EN);
+		LPC_UART1 -> LCR &= ~(UART_LCR_BREAK_EN);
 		break_flag=0;
 	}
 }
