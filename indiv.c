@@ -1,15 +1,18 @@
 #include "helpers.h"
+#include "uart1.h"
 #define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
 #define MAX_SEQ 31
 #define NO_INPUT -1
 #define TIME_OUT 3
 #define DEBOUNCE 250 //Or use wait()
 #define THRESHOLD 10
-/* See if possible to do this
-#define RED dmx_write(255,0,0);
-#define GREEN dmx_write(0,255,0);
-#define BLUE dmx_write(0,0,255);
-#define YELLOW dmx_write(255,255,0);*/
+#define RED  0
+#define GREEN 1
+#define BLUE 2
+#define YELLOW 3
+#define MAGENTA 4
+#define CYAN 5
+#define WHITE 6
 uint8_t simon_seq[MAX_SEQ];
 uint8_t current_lvl;
 uint8_t current_col;
@@ -110,18 +113,26 @@ void show_col(uint8_t col, uint8_t time)
 			dmx_write(255,0,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 1:
 			dmx_write(0,255,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 2:
 			dmx_write(0,0,255);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 		case 3:
 			dmx_write(255,255,0);
 			wait(time);
 			dmx_write(0,0,0);
+			wait(time);
+			break;
 	}
 }
 
@@ -149,9 +160,9 @@ void show_seq()
 	}
 }
 
-uint8_t key_pressed()
+int key_pressed()
 {
-	uint8_t key=-1;
+	int key=-1;
 	while(keypad_uint8_t_decode(last_state)==keypad_uint8_t_decode(state) && keypad_uint8_t_decode(state)=='G')
 	{
 		state=last_state;
