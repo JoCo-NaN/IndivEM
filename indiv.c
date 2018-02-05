@@ -16,7 +16,7 @@
 uint8_t simon_seq[MAX_SEQ];
 uint8_t current_lvl;
 uint8_t current_col;
-uint8_t colours[4] = [0,1,2,3];
+uint8_t colours[4] = {0,1,2,3};
 int difficulty=1; // Set to 1 by default
 uint8_t seq_len;
 unsigned long init_guess_time;  //Change later
@@ -74,6 +74,7 @@ void simon_game()
 	char c = keypad_uint8_t_decode(state);
 	if(!isdigit(c))
 	{
+		lcd_init();
 		lcd_write_str("Please enter a valid digit",0,0,sizeof("please enter a valid digit"));
 		setup(); // Restarts Game, can say if more time saves state of game, etc.
 	}
@@ -133,6 +134,24 @@ void show_col(uint8_t col, uint8_t time)
 			dmx_write(0,0,0);
 			wait(time);
 			break;
+		case 4:
+			dmx_write(255,0,255);
+			wait(time);
+			dmx_write(0,0,0);
+			wait(time);
+			break;
+		case 5:
+			dmx_write(0,255,255);
+			wait(time);
+			dmx_write(0,0,0);
+			wait(time);
+			break;
+		case 6:
+			dmx_write(255,255,255);
+			wait(time);
+			dmx_write(0,0,0);
+			wait(time);
+			break;
 	}
 }
 
@@ -171,8 +190,7 @@ int key_pressed()
 	char r = keypad_uint8_t_decode(state);
 	if(!isdigit(r))
 	{
-		lcd_write_str("Please enter a valid digit",0,0,sizeof("please enter a valid digit"));
-		setup();
+		return key;
 	}
  	key = r - '0';
 	return key;
@@ -220,6 +238,15 @@ void loop()
 		//	init_guess_time = ;
 		guess = NO_INPUT;
 		guess=key_pressed();
+		/* Catches digits that are not valid */
+		if((!(key <= 6)) || key == -1)
+		{
+			lcd_init();
+			lcd_write_str("Please Enter a  Valid digit!",0,0,sizeof("please enter a  valid digita"));
+			wait(2);
+			lcd_init();
+			lcd_write_str("Please Restart  to try again", 0,0, sizeof("please restart  to try again"));
+		}
 		if(guess != simon_seq[s])
 		{
 			lost(simon_seq[s]); // or use current_col
