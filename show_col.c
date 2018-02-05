@@ -28,12 +28,11 @@ __attribute__((constructor))  static void init()
 	SYSTICK_InternalInit(1);
 	SYSTICK_IntCmd(ENABLE);
 	SYSTICK_Cmd(ENABLE);
-	seed=time(NULL);
-	srand(seed);	
+	// seed=time(NULL);
+	//srand(seed);
 }
 int main(void)
 {
-	
 	setup();
 	//int key=key_pressed();
 	/* Catches digits that are not valid */
@@ -127,9 +126,12 @@ void show_seq()
 {
 	// Adjusts time based on level player is on
 	int i;
+	// seed=time(NULL);
+	//srand(time(NULL));
+	srand(time(0));
 	for (i=0;i<16; i++) //seq_len
 	{
-		simon_seq[i] = colours[rand() % 4 ;  
+		simon_seq[i] = colours[rand() % 4];
 	}
 	// simon_seq has array of colours(0to3)
 	current_lvl=12;
