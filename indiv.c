@@ -78,6 +78,7 @@ void simon_game()
 		lcd_write_str("Please enter a valid digit",0,0,sizeof("please enter a valid digit"));
 		setup(); // Restarts Game, can say if more time saves state of game, etc.
 	}
+	//lcd_write_uint8_t(state,0,0);
 	difficulty = c-'0';
 	switch(difficulty) 
 	{
@@ -95,16 +96,16 @@ void simon_game()
 			break;
 
 	}
-	
+	// May have to add srand(time(0)) here
 	//Creates pattern based on difficulty chosen, higher difficulty --> goes up to a longer sequence
-	for (int i=0; i<seq_len; i++) 
+	for (int i=0; i<seq_len; i++)
 	{
-		simon_seq[i] = colours[rand % ARR_SIZE(colours)];  
+		simon_seq[i] = colours[rand() % 4];// Add size for colour array size
 	}
 	// simon_seq has array of colours(0to3)
 	current_lvl=1;
-
 }
+
 void show_col(uint8_t col, uint8_t time)
 	/* Displays requested colour for desired duration */
 {
@@ -181,6 +182,8 @@ void show_seq()
 
 int key_pressed()
 {
+	/* Returns key pressed by Player */
+	// Remember to change to generator version
 	int key=-1;
 	while(keypad_uint8_t_decode(last_state)==keypad_uint8_t_decode(state) && keypad_uint8_t_decode(state)=='G')
 	{
@@ -197,6 +200,7 @@ int key_pressed()
 }
 void lost(uint8_t key)
 {
+	/* Called when Player loses the game */
 	lcd_write_char(current_col,0,0);
 	show_col(current_col, 5); // Need to adjust code to account for no 0 on keyboard
 	//Play a losing game sound
@@ -205,6 +209,7 @@ void lost(uint8_t key)
 
 void won()
 {
+	/* Called when Player wins the game */
 	while(1)
 	{
 		// Cycles through 4 colours , add victory sound
@@ -229,9 +234,10 @@ void won()
 
 void loop()
 {
+	/* Loop that runs as game is being played, checking Player's input */
 	// Displays seq that was configured i.e.  Computer sends pattern
 	show_seq();
-	
+
 	// Player's input  read and processed
 	for (int s=0; s<current_lvl; s++)
 	{
