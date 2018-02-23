@@ -1,6 +1,9 @@
 #include "helpers.h"
 #include "uart1.h"
+#include <stdlib.h>
+#include <math.h>
 #include <time.h>
+#include "lpc17xx_rtc.h"
 #define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
 #define MAX_SEQ 31
 #define NO_INPUT -1
@@ -17,9 +20,12 @@ uint8_t simon_seq[MAX_SEQ];
 uint8_t current_lvl;
 uint8_t current_col;
 char state = 0xFF;
+char str[4];
 char last_state = 0xFF;
 int pos = 0;
-int line = 0;
+int line = 1;
+int arr[16];
+int i;
 time_t seed;
 __attribute__((constructor))  static void init()
 {
@@ -34,6 +40,10 @@ __attribute__((constructor))  static void init()
 int main(void)
 {
 	setup();
+	RTC_Init(LPC_RTC);
+	RTC_ResetClockTickCounter(LPC_RTC);
+	RTC_Cmd(LPC_RTC, ENABLE);	
+	srand((int)RTC_GetTime(LPC_RTC, RTC_TIMETYPE_SECOND)); 
 	//int key=key_pressed();
 	/* Catches digits that are not valid */
 	/*if((!(key <= 6)) || key == -1)
@@ -44,6 +54,7 @@ int main(void)
 	lcd_init();
 	lcd_write_str("Please Restart  to try again", 0,0, sizeof("please restart  to try again"));
 	}*/
+	//show_col(1,1);
 	show_seq();
 }
 
@@ -125,13 +136,17 @@ int key_pressed()
 void show_seq()
 {
 	// Adjusts time based on level player is on
-	int i;
-	// seed=time(NULL);
+	int i,k;
+	int randIndex;
+	//seed=time(NULL);
 	//srand(time(NULL));
-	srand(time(0));
+	//srand(seed);
+	for(k=0;k<16; k++) { simon_seq[k] = 0; }
 	for (i=0;i<16; i++) //seq_len
 	{
-		simon_seq[i] = colours[rand() % 4];
+		randIndex=rand() % 4;
+		//while(rand>=4);
+		simon_seq[i] = colours[randIndex];
 	}
 	// simon_seq has array of colours(0to3)
 	current_lvl=12;
@@ -155,6 +170,23 @@ void show_seq()
 		show_col(simon_seq[j], time);
 		wait(time);
 	}
+}
+
+int random(int min, int max)
+{
+    int range, result, cutoff;
+ 
+    if (min >= max)
+        return min; // only one outcome possible, or invalid parameters
+    range = max-min+1;
+    cutoff = (RAND_MAX / range) * range;
+ 
+    // Rejection method, to be statistically unbiased.
+    do {
+        result = rand();
+    } while (result >= cutoff);
+ 
+    return result % range + min;
 }
 
 
