@@ -4,6 +4,8 @@
 #include <math.h>
 #include <time.h>
 #include "lpc17xx_rtc.h"
+#include "lpc17xx_timer.h"
+#include "lpc17xx_systick.h"
 #define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
 #define MAX_SEQ 31
 #define NO_INPUT -1
@@ -15,6 +17,7 @@
 #define MAGENTA 4;
 #define CYAN 5;
 #define WHITE 6;
+extern sys_flag, sys_time, break_flag;
 uint8_t colours[4] = {0,1,2,3};
 uint8_t simon_seq[MAX_SEQ];
 uint8_t current_lvl;
@@ -23,7 +26,7 @@ char state = 0xFF;
 char str[4];
 char last_state = 0xFF;
 int pos = 0;
-int line = 1;
+int line = 0;
 int arr[16];
 int i;
 time_t seed;
@@ -31,6 +34,7 @@ __attribute__((constructor))  static void init()
 {
 	serial_init1();
 	uart1_init();
+	timer_init();
 	SYSTICK_InternalInit(1);
 	SYSTICK_IntCmd(ENABLE);
 	SYSTICK_Cmd(ENABLE);
@@ -58,6 +62,30 @@ int main(void)
 	show_seq();
 }
 
+void TIMER0_IRQHandler(void){
+  if(TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT) == SET){
+    LPC_UART1 -> LCR &= ~(UART_LCR_BREAK_EN);
+  }
+  TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
+  TIM_Cmd(LPC_TIM0, DISABLE);
+}
+void TIMER1_IRQHandler(void){
+  if(TIM_GetIntStatus(LPC_TIM1, TIM_MR1_INT) == SET){
+    break_flag = 1;
+  }
+  TIM_ClearIntPending(LPC_TIM1, TIM_MR1_INT);
+  TIM_Cmd(LPC_TIM1, DISABLE);
+}
+
+void dmx_wait(int time)
+{
+	sys_flag=0;
+	sys_time=time;
+	UART_ForceBreak(LPC_UART1);
+	while(sys_flag!=-1);
+	
+}
+
 void setup()
 {
 	/*  Basic setup of monitor, Keyboard, LCD Monitor, Lighting Module */
@@ -73,45 +101,45 @@ void show_col(uint8_t col, uint8_t time)
 	{
 		case 0:
 			dmx_write(255,0,0);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 1:
 			dmx_write(0,255,0);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 2:
 			dmx_write(0,0,255);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 3:
 			dmx_write(255,255,0);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 4:
 			dmx_write(255,0,255);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 5:
 			dmx_write(0,255,255);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 		case 6:
 			dmx_write(255,255,255);
-			wait(time);
+			dmx_wait(time);
 			dmx_write(0,0,0);
-			wait(time);
+			dmx_wait(time);
 			break;
 	}
 }
@@ -153,22 +181,22 @@ void show_seq()
 	uint8_t time;
 	if(current_lvl <= 5)
 	{
-		time=2;
+		time=2000;
 	}
 	else if(current_lvl <= 13)
 	{
-		time=1;
+		time=1000;
 	}
 	else
 	{
-		time=0.5;
+		time=500;
 	}
 	int j;
 	for(j=0;j<current_lvl; j++)
 	{
 		current_col=simon_seq[j]; // saves colour to be shown in variable
 		show_col(simon_seq[j], time);
-		wait(time);
+		dmx_wait(time);
 	}
 }
 
