@@ -15,4 +15,4 @@ A User is able to play my personal take of the classic **Simon** game [2].
 
 
 **[1]** Embedded Systems Group project repository https://github.com/JohnnySun8/EMPR18
-**[2]** Simon: by Hasbro, and a tutorial by Marbles the Brain store  https://www.youtube.com/watch?v=1Yqj76Q4jJ4
+<br> **[2]** Simon: by Hasbro, and a tutorial by Marbles the Brain store  https://www.youtube.com/watch?v=1Yqj76Q4jJ4
