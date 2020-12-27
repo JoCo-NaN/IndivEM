@@ -1,4 +1,4 @@
-# Individual component for University of York EMPR
+# Individual component for the University of York EMPR
 
 Component I developed as part of the Embedded Systems Project (**EMPR**) carried out during my 3rd year at the University of York.
 
