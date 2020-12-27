@@ -1,8 +1,8 @@
-# IndivEM
+# Individual component for University of York EMPR
 
-Component I developed as part of the Embedded Systems project carried out during my 3rd year at the University of York.
+Component I developed as part of the Embedded Systems Project (**EMPR**) carried out during my 3rd year at the University of York.
 
-Hardware involved:
+Primary Hardware involved:
 <br> **1)** DMX lighting equipment.
 <br> **2)** University of York modified ARM Mbed board (facilities include keypad, infrared sensors, motor, VGA, HDMI, Speaker, Microphone)
 
